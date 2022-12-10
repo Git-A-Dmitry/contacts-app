@@ -1,14 +1,21 @@
-import { Form } from 'react-router-dom';
+import { Form, useLoaderData } from 'react-router-dom';
+import { getContact } from '../contacts';
+
+export async function loader({ params }) {
+  return getContact(params.contactId);
+}
 
 function Contact() {
-  const contact = {
-    first: 'Kitty',
-    last: 'Pretty',
-    avatar: 'https://placekitten.com/g/200/200',
-    twitter: 'your_handle',
-    notes: 'My best friend',
-    favorite: true,
-  };
+  const contact = useLoaderData();
+
+  // const contact = {
+  //   first: 'Kitty',
+  //   last: 'Pretty',
+  //   avatar: 'https://placekitten.com/g/200/200',
+  //   twitter: 'your_handle',
+  //   notes: 'My best friend',
+  //   favorite: true,
+  // };
 
   return (
     <div id='contact'>
