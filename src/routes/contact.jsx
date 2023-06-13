@@ -1,12 +1,21 @@
-import { Form, useLoaderData } from 'react-router-dom';
-import { getContact } from '../contacts';
+import { Form, useLoaderData, useFetcher } from 'react-router-dom';
+import { getContact, updateContact } from '../contacts';
 
 export async function loader({ params }) {
   return getContact(params.contactId);
 }
 
+export async function action({ request, params }) {
+  let formData = await request.formData();
+
+  return updateContact(params.contactId, {
+    favorite: formData.get('favorite') === 'true',
+  });
+}
+
 function Contact() {
   const contact = useLoaderData();
+  console.log(contact);
 
   // const contact = {
   //   first: 'Kitty',
@@ -34,7 +43,6 @@ function Contact() {
           )}{' '}
           <Favorite contact={contact} />
         </h1>
-
         {contact.twitter && (
           <p>
             <a target='_blank' href={`https://twitter.com/${contact.twitter}`}>
@@ -42,13 +50,12 @@ function Contact() {
             </a>
           </p>
         )}
-
         {contact.notes && <p>{contact.notes}</p>}
-
         <div>
           <Form action='edit'>
             <button type='submit'>Edit</button>
           </Form>
+
           <Form
             method='post'
             action='destroy'
@@ -61,20 +68,28 @@ function Contact() {
             <button type='submit'>Delete</button>
           </Form>
         </div>
+        <h2>Information</h2>
+        <hr />
+        {contact.info}
       </div>
     </div>
   );
 }
 
 function Favorite({ contact }) {
-  // yes, this is a `let` for later
+  const fetcher = useFetcher();
   let favorite = contact.favorite;
+
   return (
-    <Form method='post'>
-      <button name='favorite' value={favorite ? 'false' : 'true'} aria-label={favorite ? 'Remove from favorites' : 'Add to favorites'}>
+    <fetcher.Form method='post'>
+      <button //
+        name='favorite'
+        value={favorite ? 'false' : 'true'}
+        aria-label={favorite ? 'Remove from favorites' : 'Add to favorites'}
+      >
         {favorite ? '★' : '☆'}
       </button>
-    </Form>
+    </fetcher.Form>
   );
 }
 
